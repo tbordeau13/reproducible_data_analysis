@@ -36,7 +36,7 @@ ggplot(chris_names_long, aes (x=year, y=Baby_Numbers)) + geom_line(aes(colour=Se
 # textured line using geom_smooth
 ######
 
-ggplot(chris_names_long, aes(x = year, y = Baby_Numbers)) + geom_smooth()
+ggplot(chris_names_long, aes(x = year, y = Baby_Numbers)) + geom_smooth(aes(colour=Sex))
 
 ######
 # Now we will use the chris_names_long data to make a simple 
@@ -44,3 +44,4 @@ ggplot(chris_names_long, aes(x = year, y = Baby_Numbers)) + geom_smooth()
 ######
 
 ggplot(chris_names_long, aes(x=Sex, y=Baby_Numbers))+geom_boxplot()
+
