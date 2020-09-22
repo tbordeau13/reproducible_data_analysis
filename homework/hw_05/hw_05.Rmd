@@ -1,0 +1,77 @@
+---
+title: "Hw_05"
+author: "Trystan A. Bordeau"
+date: "9/21/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+######
+# First, we must install the package using the install function 
+######
+```{r}
+# install.packages("nycflights13")
+library(nycflights13)
+library(dplyr)
+```
+######
+# Check the documentation of flights 
+######
+
+```{r}
+?nycflights13::flights
+```
+
+
+######
+# use glimpse() function to get a sense the "flights" data frame
+######
+
+```{r}
+glimpse(flights)
+```
+
+
+######
+# create a dataframe of the flights that departed two hours late or more
+######
+
+```{r}
+dep_late <- filter(flights, dep_delay >= "120")
+dep_late
+glimpse(dep_late)
+```
+
+######
+# create a new column that shows the combined airline and flight numbers 
+######
+
+```{r}
+airline_flight_summ <- mutate(flights, airline_flight_summ = paste0(carrier,flight))
+glimpse(airline_flight_summ)
+airline_flight_summ
+```
+
+######
+# Create a data frame showing how many flights each aircraft flew for each carrier 
+######
+
+```{r}
+flights_grouped <- group_by(flights, carrier, tailnum)
+flights_grouped
+```
+
+
+```{r}
+final_flight_info <- group_by(summarize(flights_grouped, tailnum, n(),.groups = 'drop'))
+final_flight_info
+```
