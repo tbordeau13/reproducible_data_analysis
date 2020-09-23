@@ -66,12 +66,21 @@ airline_flight_summ
 ######
 
 ```{r}
-flights_grouped <- group_by(flights, carrier, tailnum)
+flights_grouped <- group_by(flights) %>%
+  group_by(carrier, tailnum)
 flights_grouped
 ```
 
-
+# this is before I learned about the piping methods
 ```{r}
-final_flight_info <- group_by(summarize(flights_grouped, tailnum, n(),.groups = 'drop'))
+final_flight_info <- group_by(summarize(flights_grouped, num.flights = n()))
 final_flight_info
 ```
+
+# using the piping method
+```{r}
+flights %>%
+  group_by(tailnum, carrier) %>%
+  summarize(number_of_flights = n())
+```
+
