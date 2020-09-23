@@ -73,7 +73,7 @@ flights_grouped
 
 # this is before I learned about the piping methods
 ```{r}
-final_flight_info <- group_by(summarize(flights_grouped, num.flights = n()))
+final_flight_info <- summarize(flights_grouped, num.flights = n())
 final_flight_info
 ```
 
