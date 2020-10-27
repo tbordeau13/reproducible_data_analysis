@@ -1,0 +1,112 @@
+---
+title: "hw_08"
+author: "Trystan A. Bordeau"
+date: "10/17/2020"
+output: github_document
+---
+
+# Homework 8: More Data Wrangling 
+
+
+#Lists, data frames, and vectors
+
+We must first call in the packages that we will be using
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+Next, lets create a list (using the list() function) to call three named elements. I will be using mtcars, diamonds, and letters as my three elements 
+
+```{r}
+my_list <- list(data_frame_1 = mtcars, 
+                data_frame_2 = diamonds, 
+                data_frame_3 = letters)
+```
+
+Now lets access the first element by name using $
+
+```{r}
+my_list$data_frame_1
+```
+
+Now lets access the second element using [[ ]] function 
+
+```{r}
+my_list[["data_frame_2"]]
+```
+
+Now lets access the third element as a list using the [ ] syntax 
+
+```{r}
+my_list["data_frame_3"]
+```
+
+Using mtcars, access the mpg column in two different ways 
+
+```{r}
+mtcars["mpg"]
+```
+
+```{r}
+mtcars %>%
+  select(mpg)
+```
+
+Now, we will create a new column in mtcars that displays displacement per cylinder (engine displacment divided by cylinders)
+
+```{r}
+mtcars["displacement.per.cylinder"] <- mtcars$disp / mtcars$cyl
+```
+
+Now we will create a single column data frame using the mutate() function
+
+```{r}
+mtcars <- mtcars
+disp_cyl <- mtcars %>%
+  mutate(disp_cyl = (paste(disp/cyl))) %>%
+  select(disp_cyl)
+```
+
+
+# Factors 
+
+Create a numeric vector (I will use the one given to us in the assignment)
+
+```{r}
+num.vec <- c(3, 4, 1, 5)
+```
+
+use as.factor() to convert the numeric vector to a factor 
+
+```{r}
+factor <- as.factor(num.vec)
+```
+
+use as.numeric() to convert that factor to a numeric vector 
+
+```{r}
+as.numeric(factor)
+```
+
+
+# Exploratory Data Analysis
+
+Now, lets use the babynames dataset to do some exploratory data analysis. 
+
+First, we must install the babynames package 
+
+```{r}
+library(nycflights13)
+library("tidyverse")
+library(dplyr)
+```
+
+Now, lets write some code and explore the data that we have here! 
+
+```{r}
+?nycflights13::flights
+ggplot(data = flights, aes(x = flight, y = tailnum)) 
+```
+
