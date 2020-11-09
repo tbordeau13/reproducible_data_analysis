@@ -1,0 +1,26 @@
+---
+title: "hw_10"
+author: "Trystan A. Bordeau"
+date: "11/9/2020"
+output: github_document
+---
+
+# Homework 10: Part 1 -> Linear Models 
+
+First, lets load in the packages that we will be using
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+```
+
+# 1. Create a linear model of PRICE as a function of the weight of the diamond (carat)
+
+```{r}
+diamonds
+
+C_price <- lm(data = diamonds, price ~ carat)
+summary(C_price)
+```
+

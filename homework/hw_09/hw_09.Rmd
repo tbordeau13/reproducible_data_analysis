@@ -1,0 +1,55 @@
+---
+title: "hw_09"
+author: "Trystan A. Bordeau"
+date: "11/3/2020"
+output: github_document
+---
+
+# Homework #9: Functions and Programming 
+
+Write a function to calculate the variance of a numeric vector. Before we begin, we must load in tidyverse and other needed packages
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+# 1. Variance
+Next, lets create a vector with different variables and create a code that finds variance (V)
+```{r}
+set.seed(1)
+a1 <- sample(1:20, 10)
+a1
+```
+
+Now that we have data lets create the function 
+```{r}
+Variance <- function(x) {
+x <- as.numeric(as.character(x))[!is.na(as.numeric(as.character(x)))]
+sum((x-mean(x))^2) / (length(x)-1)
+}
+
+Variance(a1)
+```
+
+# 2. Write both_na(), a function that takes two vectors of the same length and returns the number of positions that have an NA in both vectors
+
+```{r}
+both_na <- function(x, y) {
+  sum(is.na(x) & is.na(y))
+}
+both_na(
+  c(NA, 4, 1, NA), 
+  c(NA, 1, NA, NA)
+)
+
+# shows there are two NA's in the same position
+```
+
+# 3. Write a function to create a specific kind of plot that can take a data frame as an argument
+
+```{r}
+data("mtcars")
+
+```
+
+
