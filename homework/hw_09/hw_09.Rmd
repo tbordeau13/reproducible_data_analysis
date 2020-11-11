@@ -48,8 +48,26 @@ both_na(
 # 3. Write a function to create a specific kind of plot that can take a data frame as an argument
 
 ```{r}
-data("mtcars")
+plot <- function(mtcars){
+  ggplot(aes(x = cyl, y = mpg)) +
+    geom_point() + 
+labs(x = "Cylinders", y = "Miles per Gallon")
+  plot
+}
 
 ```
+# 4. 
 
+# 5. 
+
+# 6. 
+
+```{r}
+system.time(for (i in 1:1000000) 
+  (i + i))
+#This took roughly .022 seconds to perfomr this calculation
+```
+```{r}
+
+```
 
