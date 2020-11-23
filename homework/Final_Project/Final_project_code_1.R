@@ -1,9 +1,11 @@
 library(shiny)
 library(tidyverse)
 library(ggplot2)
-library(reshape2)
+library(shinythemes)
+library(viridis)
+library(shinydashboard)
 
-ui <- fluidPage(
+ui <- dashboardPage(
   
   ### The following code generates a title for the generated 'webpage'
   ### The first argument indicates what html header to use, h1 being 
@@ -11,8 +13,15 @@ ui <- fluidPage(
   ### followed by the 'align' command, explaining how to align the 
   ### titlePanel with the generated 'webpage'.
   
-  titlePanel(
-    h1("Time Point Analyses", align = "center")),
+  dashboardHeader(title = "Time Point Analysis"), 
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Dashbaord", tabName = "dashboard", icon = icon("dashboard")), 
+      menuItem("Statistical Analysis", tabName = "Statistical Analysis", icon = icon("th"))
+    )
+  ), 
+  dashboardBody(
+            
   
   ### In order to easily adjust page alignment in upcoming versions,
   ### the utilized page layout argument is 'fluidRow'. It allows for 
@@ -38,35 +47,98 @@ ui <- fluidPage(
     ###    designations that will appear otherwise/if the box is left
     ###    unchecked.
     
-    column(3, offset = 0,
-           wellPanel(
-             fileInput("data_file",
-                       "Select CSV File", 
-                       accept = ".csv",
-                       buttonLabel = "Browse..."),
-             checkboxInput("header", "CSV Header", TRUE),
-             textInput("user_graph_title", "Graph Title", "Title"),
-             textInput("user_x_axis_label", "X-axis Label", "Time"),
-             textInput("user_y_axis_label", "Y-axis Label", 
-                       "Numeric Distribution"),
-             submitButton("Update")
-           )
-    ),
-    
-    ### This designates the next 8 columns, offset by 1, to be used for 
-    ### the tableOutput defined by "csv.data". As columns 4-12 are vacant,
-    ### the next 8 columns (offset by 1, so 5-12), will be used to plot 
-    ### this table.
-    
-    column(8, offset = 1,
-           tableOutput("csv.data")
-    ),
-    
-    ### This designates that the plot outoput from 'csv.plot' will take
-    ### up 8 columns leaving two open column spaces before it.
-    
-    column(8, offset = 2,
-           plotOutput("csv.plot"))
+    fluidRow(
+      
+      ### Important information panel
+      column(4, offset = 0,
+             titlePanel(
+               h4("Important Information", align = "center")),
+             wellPanel(
+               h5("Please follow all formatting guidelines below. Graphic
+                  representation provided to the right.", 
+                  align = "center"),
+               h5("1. Ensure the first column and ONLY the first column,
+                  contains the string 'Sample'."),
+               h5("2. Ensure all non-column and row header values are
+                  numeric."),
+               h5("3. Ensure that uploaded file type is '.csv'."),
+               h5("Failure to follow these guidelines will result in graphing
+                  errors.")
+               )
+             
+               ),
+      ### Sample Formatting Panel
+      column(7, offset = 1,
+             titlePanel(
+               h4("Sample Formatting", align = "center")),
+             wellPanel(
+               h5("Place", align = "center"),
+               h5("holder", align = "center"),
+               h5("for", align = "center"),
+               h5("upcoming", align = "center"),
+               h5("sample", align = "center"),
+               h5("formatting", align = "center"),
+               h5("table", align = "center"),
+               h5("example.", align = "center")
+             )
+      ),
+      ### File Upload Panel
+      column(2, offset = 1,
+             titlePanel(
+               h4("File Upload", align = "center")),
+             wellPanel(
+               fileInput("data_file",
+                         "Select CSV File", 
+                         accept = ".csv",
+                         buttonLabel = "Browse..."),
+               checkboxInput("header", "CSV Header", TRUE)
+             )
+      ),
+      ### Table Output Panel
+      column(7, offset = 1,
+             tableOutput("csv.data")
+      ),
+      
+      ### Graph Title Panel
+      column(2, offset = 1,
+             titlePanel(
+               h4("Graph Title Features", align = "center")),
+             wellPanel(
+               textInput("user_graph_title", "Graph Title", "Title"),
+               numericInput("user_graph_title_size","Title size", 20),
+               textInput("user_title_color", "Title Color", "#666666"),
+               submitButton("Update")
+             )
+      ),
+      ### Axes Labels Panel
+      column(3, offset = 1,
+             titlePanel(
+               h4("Axes Label Features", align = "center")),
+             wellPanel(
+               textInput("user_x_axis_label", "X-axis Label", "Time"),
+               textInput("user_y_axis_label", "Y-axis Label", 
+                         "Numeric Distribution"),
+               textInput("user_axis_color", "Axis Label Color", "#666666"),
+               numericInput("user_axis_size", "Axis Label Size", 15),
+               numericInput("user_xylabel_size", "Axis Text", 12),
+               submitButton("Update")
+             )
+      ),
+      ### Color and Stats Panel
+      column(2, offset = 1,
+             titlePanel(
+               h4("Graph Colors and Statistics", align = "center")),
+             wellPanel(
+               radioButtons("user_color_palette", "Choose Color Scheme",c("A","B","C","D"),"D"),
+               radioButtons("user_stat_choice","Choose Statiscal Method", c("None","T-Test","ANOVA")),
+               submitButton("Update")
+             )
+      ),
+      ### Plot Panel
+      column(8, offset = 2,
+             plotOutput("csv.plot"))
+        )
+    )
   )
 )
 
@@ -114,7 +186,7 @@ server <- function(input,output){
   ###    ways. If you save it as the default, comma delimited file type, this
   ###    will not work. This is due to the first column being named
   ###    differently than it appears in a program like excel. Instead of 
-  ###    saving as 'Sample' it will save as 'ï..Sample'. I tried adjusting the
+  ###    saving as 'Sample' it will save as 'i..Sample'. I tried adjusting the
   ###    code to account for this but got some errors.
   
   output$csv.plot <- renderPlot({
@@ -130,18 +202,28 @@ server <- function(input,output){
                               names_to = "Time_Points",
                               values_to = "Number"
     )
-    ggplot(long_data, aes(x = Time_Points, y = Number))+
-      geom_point() + 
-      xlab(input$user_x_axis_label) +
-      ylab(input$user_y_axis_label) +
-      ggtitle(input$user_graph_title)
     
-    melt_long_data <- melt(long_data, id = "Time_Points")
-    ggplot(melt_long_data, aes(x = Number, y = Time_Points, colour = variable, group = variable)) +
-      geom_line()
+    ### ggplot takes many togglable options from the user 
+    ### this allows the user to format the axis titles , Graph title,
+    ### aixs labels, and overall color scheme. All color schemes are cupposed to be color blind friendly
     
-    })
+    
+    ggplot(long_data, aes(x = Time_Points, y = Number, color = Sample, group = Sample))+
+      geom_line(linetype = "solid") +
+      geom_point() +
+      xlab(input$user_x_axis_label) + ### x-axis label text
+      ylab(input$user_y_axis_label) + ### y-axis label text
+      ggtitle(input$user_graph_title) + ## Graph title text
+      theme(plot.title = element_text(color = input$user_title_color, ### Graph Title format
+                                      face = "bold", size = input$user_graph_title_size, hjust = 0),
+            axis.title = element_text(color = input$user_axis_color, ### Axis title font and font color
+                                      face = "bold", size = input$user_axis_size),
+            axis.text.x = element_text(face= "plain", color = "#666666" , size = input$user_xylabel_size))+ ### Axis label size, color is currently hard coded
+      scale_color_viridis(discrete = TRUE, option = input$user_color_palette) ### sets a color blind friendly color pallette
+    
+  })
 }
 
 
 shinyApp(ui = ui, server = server)
+
