@@ -7,21 +7,66 @@ library(shinydashboard)
 
 ui <- dashboardPage(
   
-  ### The following code generates a title for the generated 'webpage'
-  ### The first argument indicates what html header to use, h1 being 
-  ### the first and largest. The first variable is the title itself,
-  ### followed by the 'align' command, explaining how to align the 
-  ### titlePanel with the generated 'webpage'.
+  ### The following code generates a title, sidebar menu, and menu for the generated 'webpage'
+  ### The first argument indicates what the name of the header will be, with the additional arguments indiacting 
+  ### what the names of the menu items will be (Dashboard, Statistical Analysis, etc.). The dashboardBody() function includes
+  ### fluidRow() and the included columns that say where the panels will lie within the app. 
   
+  #Header Information 
   dashboardHeader(title = "Time Point Analysis"), 
+  
+  #Sidebar Information 
   dashboardSidebar(
-    sidebarMenu(
-      menuItem("Dashbaord", tabName = "dashboard", icon = icon("dashboard")), 
-      menuItem("Statistical Analysis", tabName = "Statistical Analysis", icon = icon("th"))
+    tabsetPanel(
+      menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")), 
+      menuItem("Statistical Analysis", tabName = "statistical analysis", icon = icon("line-chart")), 
+      menuItem("Plots", tabName = "plots", icon = icon("calendar"))
     )
-  ), 
-  dashboardBody(
-            
+  ),
+  dashboardBody( tabItems(
+    #First tab content
+      tabItem(tabName = "plots", 
+              fluidRow(
+                column(4, offset = 0,
+                       titlePanel(
+                         h4("Important Information", align = "center")),
+                       wellPanel(
+                         h5("Please follow all formatting guidelines below. Graphic
+                            representation provided to the right.", 
+                            align = "center"),
+                         h5("1. Ensure the first column and ONLY the first column,
+                            contains the string 'Sample'."),
+                         h5("2. Ensure all non-column and row header values are
+                            numeric."),
+                         h5("3. Ensure that uploaded file type is '.csv'."),
+                         h5("Failure to follow these guidelines will result in graphing
+                            errors.")
+                         )
+                       
+                         )
+              )
+              )
+      
+    )
+  ),
+
+#Second tab content 
+
+      tabItem(tabName = "statistical analysis",
+            fluidRow(
+              column(2, offset = 1,
+                     titlePanel(
+                       h4("File Upload", align = "center")),
+                     wellPanel(
+                       fileInput("data_file",
+                                 "Select CSV File", 
+                                 accept = ".csv",
+                                 buttonLabel = "Browse..."),
+                       checkboxInput("header", "CSV Header", TRUE)
+                 )
+          )
+        )
+      ),
   
   ### In order to easily adjust page alignment in upcoming versions,
   ### the utilized page layout argument is 'fluidRow'. It allows for 
@@ -50,23 +95,7 @@ ui <- dashboardPage(
     fluidRow(
       
       ### Important information panel
-      column(4, offset = 0,
-             titlePanel(
-               h4("Important Information", align = "center")),
-             wellPanel(
-               h5("Please follow all formatting guidelines below. Graphic
-                  representation provided to the right.", 
-                  align = "center"),
-               h5("1. Ensure the first column and ONLY the first column,
-                  contains the string 'Sample'."),
-               h5("2. Ensure all non-column and row header values are
-                  numeric."),
-               h5("3. Ensure that uploaded file type is '.csv'."),
-               h5("Failure to follow these guidelines will result in graphing
-                  errors.")
-               )
-             
-               ),
+        
       ### Sample Formatting Panel
       column(7, offset = 1,
              titlePanel(
@@ -83,17 +112,7 @@ ui <- dashboardPage(
              )
       ),
       ### File Upload Panel
-      column(2, offset = 1,
-             titlePanel(
-               h4("File Upload", align = "center")),
-             wellPanel(
-               fileInput("data_file",
-                         "Select CSV File", 
-                         accept = ".csv",
-                         buttonLabel = "Browse..."),
-               checkboxInput("header", "CSV Header", TRUE)
-             )
-      ),
+    
       ### Table Output Panel
       column(7, offset = 1,
              tableOutput("csv.data")
@@ -140,35 +159,8 @@ ui <- dashboardPage(
         )
     )
   )
-)
 
 server <- function(input,output){
-  
-  ### This output generates a table using the uploaded ".csv" file. It
-  ### first generates the object 'data' from the 'input''data_file'. The
-  ### extension is then obtained using the tools::file_ext command, to 
-  ### confirm the file extension is indeed ".csv". The following arguments
-  ### will then require 2 things to be true.
-  ### 1. The 'data' object is required, req(), to be present. This prevents
-  ###    generation of an empty data plot.
-  ### 2. The 'ext' object must be validated, validate(), as "csv". This 
-  ###    confirms that the uploaded data must be in a '.csv' format. If it 
-  ###    is not, an error message will be sent asking the user to confirm 
-  ###    the file format being uploaded.
-  ### Assuming these are met, 'output$csv.data' object will be stored as a 
-  ### dataframe from the 'read.csv' command enacted on the uploaded file. 
-  ### It will also designate the "header" as the previously mentioned
-  ### 'input$header' value, ensuring these two are equivalent.
-  
-  output$csv.data <- renderTable({
-    data <- input$data_file
-    ext <- tools::file_ext(data$datapath)
-    
-    req(data)
-    validate(need(ext == "csv", "Please confirm uploaded file extension is saved
-                  in a '.csv' format."))
-    read.csv(data$datapath, header = input$header)
-  })
   
   ### Plot progress so far. The file is successfully connected to file upload.
   ### The 'data' and 'ext' features can likely be streamlined in the future,
